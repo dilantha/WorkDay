@@ -15,22 +15,27 @@ class WorkDay {
 		$this->now = Carbon::now($timeZone);
 	}
 
+	/**
+	 * Calculate next due working date from a given date
+	 * @param  DateTime $fromDate From date
+	 * @param  int $delayInMinutes Delay in minutes
+	 * @return DateTime Next working due date
+	 */
 	public function due($fromDate, $delayInMinutes)
 	{
 		$fromDate->addMinutes($delayInMinutes);
 		$eod = $this->endOfDay($fromDate);
-		if ($fromDate->gt($eod))
+		// Sat
+		if ($fromDate->gt($eod) and $fromDate->dayOfWeek == 6)
 		{
-			$diff = $this->print_saved->diffInMinutes($eod);
-			$nextDayMins = $delay - $diff;
-			$due = Carbon::tomorrow()->addHours(8)->addMinutes(30);
-			$due->addMinutes($nextDayMins);
-			return $due;
+			$nextDayMins = $fromDate->diffInMinutes($eod);
+			$fromDate->addDays(2);
+			$fromDate->hour = 8;
+			$fromDate->minute = 30;
+			$fromDate->second = 0;
+			$fromDate->addMinutes($nextDayMins);
 		}
-		else 
-		{
-			return $fromDate;
-		}
+		return $fromDate;
 	}
 
 	/**
