@@ -6,13 +6,11 @@ use Carbon\Carbon;
 
 class WorkDay {
 
-	public $now;
 	public $timeZone;
 
 	public function __construct($timeZone)
 	{
 		$this->timeZone = $timeZone;
-		$this->now = Carbon::now($timeZone);
 	}
 
 	/**
@@ -26,10 +24,17 @@ class WorkDay {
 		$fromDate->addMinutes($delayInMinutes);
 		$eod = $this->endOfDay($fromDate);
 		// Sat
-		if ($fromDate->gt($eod) and $fromDate->dayOfWeek == 6)
+		if ($fromDate->gt($eod))
 		{
 			$nextDayMins = $fromDate->diffInMinutes($eod);
-			$fromDate->addDays(2);
+			if($fromDate->dayOfWeek == 6)
+			{
+				$fromDate->addDays(2);
+			}
+			else 
+			{
+				$fromDate->addDays(1);
+			}
 			$fromDate->hour = 8;
 			$fromDate->minute = 30;
 			$fromDate->second = 0;
